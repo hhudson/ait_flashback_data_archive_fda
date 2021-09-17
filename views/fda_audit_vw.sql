@@ -25,11 +25,11 @@ with ait_audit as (
                             p_parameter => 'APP_USER') as apex_user
     from
         cv_env_var 
-    versions between timestamp to_timestamp('20210916161348492495000', 'YYYYMMDDHH24MISSFF9') and maxvalue
+    versions between timestamp to_timestamp('20210916061348492495000', 'YYYYMMDDHH24MISSFF9') and maxvalue
     ),
     audit_updates as (
     select aa.versions_operation, aa.var_name, aa.var_val old_val, aa1.var_val new_value, aa.updated, aa.updated_by,
-            apex_string.format(p_message => '%0 updated a record on %4 : the value of %1 changed from "%2" to "%3"', 
+            apex_string.format(p_message => '%0 updated a record on %4: value of %1 changed from "%2" to "%3"', 
                                 p0 => initcap(aa.updated_by),
                                 p1 => aa.var_name,
                                 p2 => aa1.var_val,
@@ -53,7 +53,7 @@ with ait_audit as (
     audit_deletions as (
     select aa.versions_operation, aa.var_name, aa.var_val, aa.updated_by, aa1.versions_endtime updated,
            apex_string.format(p_message => '%0 deleted a record on %4: name "%2" and value "%3" ', 
-                              p0 => initcap(aa1.apex_user),
+                              p0 => initcap(coalesce(aa1.apex_user,aa1.session_user, 'unknown user')),
                               p2 => aa.var_name,
                               p3 => aa.var_val,
                               p4 => to_char(aa1.versions_endtime, 'DD-MON')) summary
