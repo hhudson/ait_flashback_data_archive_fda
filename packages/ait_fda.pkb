@@ -1,7 +1,5 @@
 create or replace package body ait_fda  is
 
-    gc_scope_prefix constant varchar2(31) := lower($$plsql_unit) || '.';
-
     function my_context(p_xid       in raw,
                         p_namespace in varchar2,
                         p_parameter in varchar2)
